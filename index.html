@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+/*div {
+    background-color: #bada55;
+    width: 100px;
+    border: 1px solid green;
+}*/
+
+span {
+  float: left;
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  background: #525252;
+  color: red;
+  font-size: 20pt;
+}
+
+</style>
+<script src="jquery-1.11.3.js"></script>
+<script src="jquery.color-2.1.2.js"></script>
+</head>
+<body>
+
+<script>
+/*jQuery("#go").click(function(){
+    jQuery("#block").animate({
+            backgroundColor: "#abcdef"
+    }, 1500 );
+});
+jQuery("#sat").click(function(){
+    jQuery("#block").animate({
+            backgroundColor: jQuery.Color({ lightness: 3})
+    }, 1500 );
+});*/
+
+var px=0;
+var py=0;
+
+$( document ).ready(function() {
+  for(var i = 0; i<20;i++)
+   for(var j = 0; j<20;j++)
+    $('#main').append("<span id='"+j+'-'+i+"'></span>");
+	
+	
+	$('span').click(function(){
+	//if(!confirm('Установить здесь источник света?')) return;
+	var xy=$(this).attr('id').split('-');
+	lamps.push({x:Number(xy[0]),y:Number(xy[1]),w:100});
+	});
+});
+
+var px=10;
+var py=10;
+
+// использование Math.round() даст неравномерное распределение!
+function getRandomInt(min, max)
+{
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+
+function go(){
+
+	$('#'+px+'-'+py).text('');
+
+	var to=[
+		[0,-1],
+		[0,1],
+		[1,0],
+		[-1,0],
+		[0,0],
+	];
+	
+	var where=to[getRandomInt(0,to.length-1)];
+	
+	px=px+where[0];
+	py=py+where[1];
+	
+	if(px < 0) px=0;
+	if(py < 0) py=0;
+	if(px > 19) px=19;
+	if(py > 19) py=19;
+}
+
+function lightOff(x,y){
+	 $('#'+x+'-'+y).css( "backgroundColor", "#525252");
+	
+	$('#'+(x-1)+'-'+y).css( "backgroundColor", "#525252");
+	$('#'+(x+1)+'-'+y).css( "backgroundColor", "#525252");
+	$('#'+(x)+'-'+(y+1)).css( "backgroundColor", "#525252");
+	$('#'+(x)+'-'+(y-1)).css( "backgroundColor", "#525252");
+	$('#'+(x+1)+'-'+(y+1)).css( "backgroundColor", "#525252");
+	$('#'+(x-1)+'-'+(y-1)).css( "backgroundColor", "#525252");
+	$('#'+(x-1)+'-'+(y+1)).css( "backgroundColor", "#525252");
+	$('#'+(x+1)+'-'+(y-1)).css( "backgroundColor", "#525252");
+}
+
+function lightOn(x,y){
+	 $('#'+x+'-'+y).animate({
+            backgroundColor: "#F6FF00"
+    }, 500 );
+	
+	$('#'+(x-1)+'-'+y).animate({
+            backgroundColor: "#9BA100"
+    }, 500 );
+	$('#'+(x+1)+'-'+y).animate({
+            backgroundColor: "#9BA100"
+    }, 500 );
+	$('#'+(x)+'-'+(y+1)).animate({
+            backgroundColor: "#9BA100"
+    }, 500 );
+	$('#'+(x)+'-'+(y-1)).animate({
+            backgroundColor: "#9BA100"
+    }, 500 );
+	$('#'+(x+1)+'-'+(y+1)).animate({
+            backgroundColor: "#9BA100"
+    }, 500 );
+	$('#'+(x-1)+'-'+(y-1)).animate({
+            backgroundColor: "#9BA100"
+    }, 500 );
+	$('#'+(x-1)+'-'+(y+1)).animate({
+            backgroundColor: "#9BA100"
+    }, 500 );
+	$('#'+(x+1)+'-'+(y-1)).animate({
+            backgroundColor: "#9BA100"
+    }, 500 );
+}
+
+var lamps=[
+{x:0,y:0,w:100},
+{x:19,y:19,w:200},
+{x:10,y:16,w:50},
+{x:19,y:16,w:60},
+{x:10,y:10,w:40},
+{x:19,y:0,w:60},
+{x:10,y:13,w:100},
+{x:3,y:9,w:60},
+{x:9,y:3,w:100},
+];
+
+//lamps = [{"x":8,"y":4,"w":100},{"x":7,"y":3,"w":100},{"x":6,"y":3,"w":100},{"x":4,"y":4,"w":100},{"x":4,"y":6,"w":100},{"x":4,"y":8,"w":100},{"x":5,"y":10,"w":100},{"x":7,"y":12,"w":100},{"x":8,"y":14,"w":100},{"x":9,"y":14,"w":100},{"x":10,"y":14,"w":100},{"x":11,"y":13,"w":100},{"x":12,"y":12,"w":100},{"x":13,"y":11,"w":100},{"x":14,"y":9,"w":100},{"x":15,"y":7,"w":100},{"x":15,"y":6,"w":100},{"x":15,"y":4,"w":100},{"x":15,"y":3,"w":100},{"x":14,"y":3,"w":100},{"x":12,"y":3,"w":100},{"x":11,"y":4,"w":100},{"x":10,"y":5,"w":100},{"x":9,"y":5,"w":100}];
+
+var currenergy=0;
+
+function setLamps() {
+
+currenergy=0;
+	
+	$('span').css( "backgroundColor", "#525252");
+	
+	for(var a in lamps){
+		$('#'+lamps[a].x+'-'+lamps[a].y).text('☀');
+		if(px < lamps[a].x+2 && px > lamps[a].x-2 && py < lamps[a].y+2 && py > lamps[a].y-2){
+			lightOn(lamps[a].x,lamps[a].y);
+			currenergy+=lamps[a].w;
+			}else
+				lightOff(lamps[a].x,lamps[a].y);
+	}
+	
+	if(currenergy==0){
+		$('span').css( "backgroundColor", "#F6FF00");
+		currenergy=1000;
+	}else{
+		
+	}
+	
+	$('#watt').text('Текущее эноргопотребление: '+(currenergy==1000?currenergy+' ватт (общий источник света)':currenergy+' ватт'));
+}
+
+
+
+function update(){
+	go();
+	setLamps();
+	$('#'+px+'-'+py).text('☺');
+}
+
+setInterval(function(){update();},500);
+
+</script>
+
+<h2 id="watt">Текущее эноргопотребление: 0 ватт</h2>
+<div style="max-width:600px;border: 2px solid black;" id="main">
+
+</div>
+
+
+</body>
+</html>
